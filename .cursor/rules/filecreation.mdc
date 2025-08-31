@@ -1,0 +1,5 @@
+---
+description: dont create new files. everything should be inside the component chat.tsx since we are embeding this in framer and we cant insert code and repositories there. Everything in one file.
+globs: 
+alwaysApply: true
+---
