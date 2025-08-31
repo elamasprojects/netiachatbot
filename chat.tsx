@@ -99,10 +99,8 @@ export default function EmbedChat({
 
     const AIInputField: React.FC<AIInputFieldProps> = ({ onSubmit, onToggleRecord, isRecording, disabled }) => {
         const [message, setMessage] = React.useState("")
-        // attachments removed
         const [isFocused, setIsFocused] = React.useState(false)
         const textareaRef = React.useRef<HTMLTextAreaElement | null>(null)
-        const fileInputRef = React.useRef<HTMLInputElement | null>(null)
 
         React.useEffect(() => {
             if (textareaRef.current) {
@@ -110,8 +108,6 @@ export default function EmbedChat({
                 textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + "px"
             }
         }, [message])
-
-        // attachments removed
 
         function handleSubmit() {
             if (disabled) return
@@ -133,25 +129,82 @@ export default function EmbedChat({
                 <div className={`relative transition-all duration-500 ease-out ${isFocused || message ? "transform scale-105" : ""}`}>
                     <div className={`absolute inset-0 rounded-3xl transition-all duration-500 ${isFocused ? "bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-xl scale-110" : "bg-gradient-to-r from-slate-200/50 via-slate-100/50 to-slate-200/50 blur-lg"}`}></div>
                     <div className={`relative backdrop-blur-xl bg-white/80 border-2 rounded-3xl transition-all duration-300 ${isFocused ? "border-blue-400/50 shadow-2xl shadow-blue-500/25" : "border-white/60 shadow-xl shadow-slate-300/25"} hover:shadow-2xl hover:shadow-slate-400/30`} style={{ borderRadius: 24, background: "rgba(255,255,255,0.9)", border: "2px solid rgba(226,232,240,0.9)", boxShadow: isFocused ? "0 12px 30px rgba(59,130,246,0.25)" : "0 10px 24px rgba(100,116,139,0.25)" }}>
-                        {/* attachments UI removed */}
+                        
+                        {/* Layout principal: Audio | Textarea | Send */}
+                        <div className="flex items-center p-4 gap-3" style={{ display: "flex", alignItems: "center", padding: "16px", gap: 12 }}>
+                            
+                            {/* Botón de Audio - Izquierda */}
+                            <button 
+                                onClick={onToggleRecord} 
+                                className={`group relative p-3 rounded-2xl transition-all duration-300 hover:scale-110 ${isRecording ? "bg-gradient-to-br from-red-100/80 to-pink-100/80 animate-pulse shadow-lg shadow-red-300/50" : "bg-gradient-to-br from-slate-100/80 to-white/80 hover:from-orange-100/80 hover:to-orange-200/80 hover:shadow-lg"}`} 
+                                title={isRecording ? "Stop recording" : "Voice input"} 
+                                style={{ 
+                                    padding: 10, 
+                                    borderRadius: 14, 
+                                    border: isRecording ? "1px solid #fecaca" : "1px solid #e2e8f0", 
+                                    background: isRecording ? "linear-gradient(180deg,#fee2e2,#fff1f2)" : "linear-gradient(180deg,#f8fafc,#ffffff)", 
+                                    cursor: "pointer",
+                                    flexShrink: 0
+                                }}
+                            >
+                                <Mic className={`w-5 h-5 transition-colors duration-300 ${isRecording ? "text-red-600" : "text-orange-500 group-hover:text-orange-600"}`} />
+                                <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${isRecording ? "bg-gradient-to-br from-red-400/20 to-pink-400/20" : "bg-gradient-to-br from-orange-400/0 to-orange-500/0 group-hover:from-orange-400/20 group-hover:to-orange-500/20"}`}></div>
+                            </button>
 
-                        <div className="flex items-end p-6 gap-4" style={{ display: "flex", alignItems: "flex-end", gap: 16, padding: "16px 16px 16px 16px" }}>
-                            <div className="flex items-center gap-3" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                <button onClick={onToggleRecord} className={`group relative p-3 rounded-2xl transition-all duration-300 hover:scale-110 ${isRecording ? "bg-gradient-to-br from-red-100/80 to-pink-100/80 animate-pulse shadow-lg shadow-red-300/50" : "bg-gradient-to-br from-slate-100/80 to-white/80 hover:from-green-100/80 hover:to-emerald-100/80 hover:shadow-lg"}`} title={isRecording ? "Stop recording" : "Voice input"} style={{ padding: 10, borderRadius: 14, border: isRecording ? "1px solid #fecaca" : "1px solid #e2e8f0", background: isRecording ? "linear-gradient(180deg,#fee2e2,#fff1f2)" : "linear-gradient(180deg,#f8fafc,#ffffff)", cursor: "pointer" }}>
-                                    <Mic className={`w-5 h-5 transition-colors duration-300 ${isRecording ? "text-red-600" : "text-slate-600 group-hover:text-green-600"}`} />
-                                    <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${isRecording ? "bg-gradient-to-br from-red-400/20 to-pink-400/20" : "bg-gradient-to-br from-green-400/0 to-emerald-400/0 group-hover:from-green-400/20 group-hover:to-emerald-400/20"}`}></div>
-                                </button>
-                            </div>
-
-                            <div className="flex-1 relative" style={{ position: "relative" }}>
-                                <textarea ref={textareaRef} value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={handleKeyDown} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)} placeholder="Preguntame lo que quieras.." className="w-full resize-none border-none outline-none text-slate-800 placeholder-slate-400 text-lg leading-relaxed min-h-[32px] max-h-32 bg-transparent font-medium selection:bg-blue-200/50" rows={1} style={{ background: "transparent", width: "100%", resize: "none", border: "none", outline: "none", color: "#0f172a", fontSize: 16, lineHeight: 1.6, minHeight: 32, maxHeight: 120, fontWeight: 500 }} />
+                            {/* Textarea - Centro */}
+                            <div className="flex-1 relative" style={{ position: "relative", flex: 1 }}>
+                                <textarea 
+                                    ref={textareaRef} 
+                                    value={message} 
+                                    onChange={(e) => setMessage(e.target.value)} 
+                                    onKeyDown={handleKeyDown} 
+                                    onFocus={() => setIsFocused(true)} 
+                                    onBlur={() => setIsFocused(false)} 
+                                    placeholder="Preguntame lo que quieras.." 
+                                    className="w-full resize-none border-none outline-none text-slate-800 placeholder-slate-400 text-lg leading-relaxed min-h-[32px] max-h-32 bg-transparent font-medium selection:bg-blue-200/50" 
+                                    rows={1} 
+                                    style={{ 
+                                        background: "transparent", 
+                                        width: "100%", 
+                                        resize: "none", 
+                                        border: "none", 
+                                        outline: "none", 
+                                        color: "#0f172a", 
+                                        fontSize: 16, 
+                                        lineHeight: 1.6, 
+                                        minHeight: 32, 
+                                        maxHeight: 120, 
+                                        fontWeight: 500,
+                                        padding: "8px 0"
+                                    }} 
+                                />
                                 {isFocused && !message && (
                                     <div className="absolute top-1 left-0 w-0.5 h-8 bg-gradient-to-b from-blue-500 to-purple-500 animate-pulse rounded-full"></div>
                                 )}
                             </div>
 
-                            <button onClick={handleSubmit} disabled={disabled || !message.trim()} className={`group relative p-4 rounded-2xl font-medium transition-all duration-300 ${message.trim() ? "bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl shadow-blue-500/40 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-110 transform-gpu" : "bg-gradient-to-br from-slate-200/80 to-slate-300/80 text-slate-400 cursor-not-allowed"}`} title="Send message" style={{ padding: 10, borderRadius: 12, border: "none", cursor: disabled || !message.trim() ? "not-allowed" : "pointer", background: message.trim() ? "linear-gradient(135deg,#3b82f6,#8b5cf6)" : "linear-gradient(180deg,#e5e7eb,#f3f4f6)", color: message.trim() ? "#fff" : "#9ca3af", boxShadow: message.trim() ? "0 10px 24px rgba(59,130,246,0.4)" : "none" }}>
-                                <Send className="w-6 h-6" />
+                            {/* Botón de Enviar - Derecha */}
+                            <button 
+                                onClick={handleSubmit} 
+                                disabled={disabled || !message.trim()} 
+                                className={`group relative p-4 rounded-2xl font-medium transition-all duration-300 ${message.trim() ? "bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-xl shadow-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/50 hover:scale-110 transform-gpu" : "bg-gradient-to-br from-slate-200/80 to-slate-300/80 text-slate-400 cursor-not-allowed"}`} 
+                                title="Send message" 
+                                style={{ 
+                                    padding: 10, 
+                                    borderRadius: 12, 
+                                    border: "none", 
+                                    cursor: disabled || !message.trim() ? "not-allowed" : "pointer", 
+                                    background: message.trim() ? "linear-gradient(135deg,#FF7A00,#FF8C1A)" : "linear-gradient(180deg,#e5e7eb,#f3f4f6)", 
+                                    color: message.trim() ? "#fff" : "#9ca3af", 
+                                    boxShadow: message.trim() ? "0 10px 24px rgba(255,122,0,0.4)" : "none", 
+                                    height: 40, 
+                                    display: "flex", 
+                                    alignItems: "center", 
+                                    justifyContent: "center",
+                                    flexShrink: 0
+                                }}
+                            >
+                                <Send className="w-5 h-5" />
                             </button>
                         </div>
 
